@@ -2,8 +2,17 @@ from __future__ import print_function
 import numpy as np
 
 
-def display_cm(cm, labels, hide_zeros=False,
-                             display_metrics=False):
+def accuracy_adjacent(conf, adjacent_facies):
+    nb_classes = conf.shape[0]
+    total_correct = 0.
+    for i in np.arange(0,nb_classes):
+        total_correct += conf[i][i]
+        for j in adjacent_facies[i]:
+            total_correct += conf[i][j]
+    return total_correct / sum(sum(conf))
+
+
+def display_cm(cm, labels, hide_zeros=False, display_metrics=False):
     """Display confusion matrix with labels, along with
        metrics such as Recall, Precision and F1 score.
        Based on Zach Guo's print_cm gist at
@@ -21,7 +30,6 @@ def display_cm(cm, labels, hide_zeros=False,
     total_precision = np.sum(precision * cm.sum(axis=1)) / cm.sum(axis=(0,1))
     total_recall = np.sum(recall * cm.sum(axis=1)) / cm.sum(axis=(0,1))
     total_F1 = np.sum(F1 * cm.sum(axis=1)) / cm.sum(axis=(0,1))
-    #print total_precision
     
     columnwidth = max([len(x) for x in labels]+[5]) # 5 is value length
     empty_cell = " " * columnwidth
@@ -75,4 +83,3 @@ def display_adj_cm(
         
     display_cm(adj_cm, labels, hide_zeros, 
                              display_metrics)
-        
